@@ -1,0 +1,39 @@
+@page "/attendance"
+@using EventEase.Services
+@inject AttendanceService AttendanceService
+@inject EventEase.Services.EventService EventService
+
+<h1>Event Attendance Tracker</h1>
+
+<div class="attendance-list">
+    @foreach (var evt in events)
+    {
+        <div class="event-card attendance-card">
+            <h3>@evt.Name</h3>
+            <p><strong>Date:</strong> @evt.Date.ToShortDateString()</p>
+            <p><strong>Location:</strong> @evt.Location</p>
+            <p><strong>Attendees:</strong></p>
+            @if (AttendanceService.GetAttendees(evt.Id).Any())
+            {
+                <ul>
+                    @foreach (var attendee in AttendanceService.GetAttendees(evt.Id))
+                    {
+                        <li>@attendee</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No attendees yet.</p>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<EventEase.Models.Event> events = new();
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+    }
+}

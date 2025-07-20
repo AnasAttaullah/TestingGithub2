@@ -1,0 +1,29 @@
+@page "/eventdetails/{EventId:int}"
+@using EventEase.Models
+@using EventEase.Shared
+@inject EventEase.Services.EventService EventService
+
+<h1>Event Details</h1>
+
+@if (eventDetails == null)
+{
+    <p>Loading event details...</p>
+}
+else
+{
+    <EventCard Event="eventDetails" />
+    <div style="margin-top:1.5rem;">
+        <a class="btn btn-primary" href="/register">Register for this event</a>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int EventId { get; set; }
+    private Event eventDetails;
+
+    protected override void OnInitialized()
+    {
+        eventDetails = EventService.GetEvents().FirstOrDefault(e => e.Id == EventId);
+    }
+}

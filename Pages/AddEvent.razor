@@ -1,0 +1,47 @@
+@page "/addevent"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using EventEase.Models
+@inject EventEase.Services.EventService EventService
+
+<h1>Add New Event</h1>
+
+<div class="registration-form">
+    <EditForm Model="newEvent" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label>Name:</label>
+            <InputText @bind="newEvent.Name" class="form-control" />
+        </div>
+        <div>
+            <label>Date:</label>
+            <InputDate @bind="newEvent.Date" TValue="DateTime" class="form-control" />
+        </div>
+        <div>
+            <label>Location:</label>
+            <InputText @bind="newEvent.Location" class="form-control" />
+        </div>
+        <div>
+            <label>Description:</label>
+            <InputTextArea @bind="newEvent.Description" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Event</button>
+    </EditForm>
+    @if (success)
+    {
+        <div class="alert alert-success mt-3">Event added successfully!</div>
+    }
+</div>
+
+@code {
+    private Event newEvent = new();
+    private bool success = false;
+
+    private void HandleValidSubmit()
+    {
+        EventService.AddEvent(newEvent);
+        newEvent = new();
+        success = true;
+    }
+}

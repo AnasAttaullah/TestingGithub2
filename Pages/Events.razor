@@ -1,0 +1,34 @@
+@page "/events"
+@using EventEase.Models
+@using Microsoft.AspNetCore.Components.Routing
+@using EventEase.Shared
+@inject EventEase.Services.EventService EventService
+
+<h1>Events</h1>
+
+@if (events == null)
+{
+    <p>Loading events...</p>
+}
+else if (!events.Any())
+{
+    <p>No events found.</p>
+}
+else
+{
+    <div class="event-list">
+        @foreach (var evt in events)
+        {
+            <EventCard Event="evt" ShowDetailsButton="true" />
+        }
+    </div>
+}
+
+@code {
+    private List<Event> events;
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+    }
+}

@@ -1,0 +1,39 @@
+@using EventEase.Models
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+
+<div class="event-card">
+    <h3>
+        <NavLink href="@($"/eventdetails/{Event.Id}")" Match="NavLinkMatch.Prefix">@Event.Name</NavLink>
+    </h3>
+    <p><strong>Date:</strong> @Event.Date.ToShortDateString()</p>
+    <p><strong>Location:</strong> @Event.Location</p>
+    @if (ShowDetailsButton)
+    {
+        <NavLink class="btn btn-primary" href="@($"/eventdetails/{Event.Id}")" Match="NavLinkMatch.Prefix">View Details</NavLink>
+    }
+    @if (ShowAttendees && Attendees != null)
+    {
+        <p><strong>Attendees:</strong></p>
+        @if (Attendees.Any())
+        {
+            <ul>
+                @foreach (var attendee in Attendees)
+                {
+                    <li>@attendee</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No attendees yet.</p>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public Event Event { get; set; }
+    [Parameter] public bool ShowDetailsButton { get; set; } = false;
+    [Parameter] public bool ShowAttendees { get; set; } = false;
+    [Parameter] public IReadOnlyList<string> Attendees { get; set; }
+}

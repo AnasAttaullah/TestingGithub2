@@ -1,0 +1,72 @@
+@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@inject EventEase.Services.UserSessionService UserSession
+@inject EventEase.Services.AttendanceService AttendanceService
+@inject EventEase.Services.EventService EventService
+
+<h1>Register for Event</h1>
+
+<div class="registration-form">
+    <EditForm Model="registration" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label>Name:</label>
+            <InputText @bind-Value="registration.Name" class="form-control" />
+        </div>
+        <div>
+            <label>Email:</label>
+            <InputText @bind-Value="registration.Email" class="form-control" />
+        </div>
+        <div>
+            <label>Event:</label>
+            <InputSelect @bind-Value="registration.EventId" class="form-control">
+                <option value="">Select an event</option>
+                @foreach (var evt in events)
+                {
+                    <option value="@evt.Id">@evt.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </EditForm>
+
+    @if (success)
+    {
+        <div class="alert alert-success mt-3">Registration successful!</div>
+    }
+</div>
+
+@code {
+    private RegistrationModel registration = new();
+    private List<EventEase.Models.Event> events = new();
+    private bool success = false;
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+    }
+
+    private void HandleValidSubmit()
+    {
+        success = true;
+        // Save session info
+        UserSession.SetSession(registration.Name, registration.Email, registration.EventId);
+        // Track attendance
+        if (registration.EventId.HasValue)
+        {
+            AttendanceService.RegisterAttendance(registration.EventId.Value, registration.Email);
+        }
+    }
+
+    public class RegistrationModel
+    {
+        [Required]
+        public string Name { get; set; }
+        [Required, EmailAddress]
+        public string Email { get; set; }
+        [Required]
+        public int? EventId { get; set; }
+    }
+}
